@@ -30,7 +30,7 @@ populate(){
     if [ ! -x "$_CONDOR_SCRATCH_DIR/parrot_static_run" ]; then get_parrot; fi
     mkdir -p "$_CONDOR_SCRATCH_DIR/$REANA_WORKFLOW_DIR"
     local parent="$(dirname $REANA_WORKFLOW_DIR)"
-    $_CONDOR_SCRATCH_DIR/parrot_static_run -T 30 cp --no-clobber -r "/chirp/CONDOR/$REANA_WORKFLOW_DIR" "$_CONDOR_SCRATCH_DIR/$parent"
+    $_CONDOR_SCRATCH_DIR/parrot_static_run -T 4 cp --no-clobber -r "/chirp/CONDOR/$REANA_WORKFLOW_DIR" "$_CONDOR_SCRATCH_DIR/$parent"
 }
 
 find_module(){
@@ -175,7 +175,11 @@ setup_container
 # temporary wrapper file named tmpjob.
 tmpjob=$(mktemp -p .)
 chmod +x $tmpjob 
-echo "$CONTAINER_ENV" "$CONTAINER_PATH" "$CNTR_ARGUMENTS" "${@:3} " > $tmpjob
+if command -v aprun; then
+    echo -n "aprun -b -n 1 -- " > $tmpjob
+fi
+
+echo "$CONTAINER_ENV" "$CONTAINER_PATH" "$CNTR_ARGUMENTS" "${@:3} " >> $tmpjob
 bash $tmpjob
 res=$?
 rm $tmpjob
@@ -206,6 +210,6 @@ fi
 
 parent="$(dirname $REANA_WORKFLOW_DIR)"
 # TODO: Check for parrot exit code and propagate it in case of errors.
-./parrot_static_run -T 30 cp --no-clobber -r "$_CONDOR_SCRATCH_DIR/$REANA_WORKFLOW_DIR" "/chirp/CONDOR/$parent"
+./parrot_static_run -T 4 cp --no-clobber -r "$_CONDOR_SCRATCH_DIR/$REANA_WORKFLOW_DIR" "/chirp/CONDOR/$parent"
 
 exit $res
