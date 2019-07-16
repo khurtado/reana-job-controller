@@ -164,6 +164,7 @@ class HTCondorJobManager(JobManager):
         for key, value in self.env_vars.items():
             job_env += '; {0}={1}'.format(key, value)
         sub['environment'] = job_env
+        sub['on_exit_remove'] = '(ExitBySignal == False) && ((ExitCode == 0) || (ExitCode !=0 && NumJobStarts > {0}))'.format(MAX_JOB_RESTARTS)
         clusterid = submit(self.schedd, sub)
         logging.warning("Submitting job clusterid: {0}".format(clusterid))
         return str(clusterid)
