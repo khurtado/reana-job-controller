@@ -57,11 +57,11 @@ install_requires = [
     'apispec>=0.21.0,<0.40',
     'Flask>=0.11',
     'kubernetes>=9.0.0',
-    'marshmallow>=2.13',
+    'marshmallow>2.13.0,<=2.20.1',
     'reana-commons[kubernetes]>=0.5.0,<0.6.0',
     'reana-db>=0.5.0,<0.6.0',
     'urllib3<1.25,>=1.21.1',
-    'htcondor',
+    'htcondor==8.9.1',
 ]
 
 packages = find_packages()
